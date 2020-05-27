@@ -24,7 +24,7 @@ class NeuralNetwork():
 
     def feedforward(self, A):
         for w, b in zip(self.weights, self.bias):
-            A = A @ w.T + b.T
+            A = sigmoid(A @ w.T + b.T)
         return A
 
     def predict(self, A):
