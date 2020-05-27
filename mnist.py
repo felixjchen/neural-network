@@ -14,12 +14,11 @@ def preprocess(data):
     x, y = data[0], data[1]
     # One hot
     y = np.eye(10)[y]
-    # Make into 2d array
-    data = [(nx[:,None], ny[:,None]) for nx, ny in zip(x, y)]
-    return data
+    return x, y
 
-TRAINING = preprocess(TRAINING)
-VALIDATION = preprocess(VALIDATION)
 
-model = NeuralNetwork([784, 784, 784, 10])
-model.SGD(TRAINING, VALIDATION)
+train_X, train_y = preprocess(TRAINING)
+val_X, val_y = preprocess(TRAINING)
+
+model = NeuralNetwork([784, 30,  10])
+model.SGD(train_X, train_y, val_X, val_y)

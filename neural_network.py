@@ -1,6 +1,6 @@
 import numpy as np
 
-np.random.seed(1)
+np.random.seed(0)
 
 
 def sigmoid(z):
@@ -22,70 +22,85 @@ class NeuralNetwork():
         self.weights = [np.random.randn(i, o)
                         for i, o in zip(size[1:], size[:-1])]
 
-    def feedforward(self, a):
-
+    def feedforward(self, A):
         for w, b in zip(self.weights, self.bias):
-            a = sigmoid(w @ a + b)
-        return a
+            A = A @ w.T + b.T
+        return A
 
-    def SGD(self, training_set, validation_set, epochs=10, minibatch_size=1000, eta=10):
+    def predict(self, A):
+        pred = self.feedforward(A)
 
-        n = len(training_set)
+        return np.argmax(pred, axis=1)
+
+    def SGD(self, train_X, train_y, val_X, val_y, epochs=30, batch_percent=0.0002, eta=3):
+        """ Stochastic gradient descent, """
+        assert 0 < batch_percent <= 1, "batch percent invalid"
+
+        n = len(train_X)
+        num_batches = 1 / batch_percent
 
         for e in range(epochs):
 
-            np.random.shuffle(training_set)
-            minibatches = [training_set[m:m+minibatch_size]
-                           for m in range(0, n, minibatch_size)]
+            p = np.random.permutation(n)
+            train_X, train_y = train_X[p], train_y[p]
+            batches_X, batches_y = np.array_split(
+                train_X, num_batches), np.array_split(train_y, num_batches)
 
-            for batch in minibatches:
-                self.update(batch, eta)
+            for batch_X, batch_y in zip(batches_X, batches_y):
+                self.update(batch_X, batch_y, eta)
 
-                r = [(np.argmax(self.feedforward(x)) == np.argmax(y))
-                     for (x, y) in validation_set]
-                print(sum(r)/len(validation_set) * 100)
+            pred = self.predict(val_X)
+            actual = np.argmax(val_y, axis=1)
+            print(sum(pred == actual) / len(val_X) * 100)
 
-    def update(self, batch, eta):
+    def update(self, X, y, eta):
 
-        partial_b = [np.zeros(b.shape) for b in self.bias]
-        partial_w = [np.zeros(w.shape) for w in self.weights]
+        c = eta/len(X)
 
-        for x, y in batch:
-            add_partial_b, add_partial_w = self.backprop(x, y)
-            partial_b = [b + db for b, db in zip(partial_b, add_partial_b)]
-            partial_w = [w + dw for w, dw in zip(partial_w, add_partial_w)]
+        grad_b, grad_w = self.backprop(X, y)
 
-        m = len(batch)
-        c = eta/m
+        self.bias = [b - c*db for b, db in zip(self.bias, grad_b)]
+        self.weights = [w - c*dw for w, dw in zip(self.weights, grad_w)]
 
-        self.bias = [b - c*db for b, db in zip(self.bias, partial_b)]
-        self.weights = [w - c*dw for w, dw in zip(self.weights, partial_w)]
+    def backprop(self, X, y):
+        """ For all mxj training inputs and mxk labels, compute the sum of grads w.r.t to bias and weights for each node"""
+        # size of minibatch
+        m = len(X)
 
-    def backprop(self, x, y):
-
-        partial_b = [np.zeros(b.shape) for b in self.bias]
-        partial_w = [np.zeros(w.shape) for w in self.weights]
-
-        # Feed forward, caching each layer's activation a in A and z in Z
+        # Feed forward, if a layer has k nodes, Z is a list of nxk z values and A is a list of nxk activation values
         Z = []
-        activations = [x]
+        A = [X]
         for w, b in zip(self.weights, self.bias):
-            z = w @ activations[-1] + b
-
+            z = A[-1] @ w.T + b.T
             Z += [z]
-            activations += [sigmoid(z)]
+            A += [sigmoid(z)]
+
+        grad_b = [None for b in self.bias]
+        grad_w = [None for w in self.weights]
 
         # Find error in last layer
         n = self.num_layers
 
+        # Deltas is a list of nxk errors for a layer with k nodes
         deltas = [None for _ in range(n-1)]
-        deltas[-1] = (activations[-1] - y) * sigmoid_prime(Z[-1])
-        partial_b[-1] = deltas[-1]
-        partial_w[-1] = deltas[-1] @ activations[-2].T
+        deltas[-1] = (A[-1] - y) * sigmoid_prime(Z[-1])
 
-        for l in range(self.num_layers - 3, -1, -1):
-            deltas[l] = self.weights[l+1].T @ deltas[l+1] * sigmoid_prime(Z[l])
-            partial_b[l] = deltas[l]
-            partial_w[l] = deltas[l] * activations[l].T
+        grad_b[-1] = deltas[-1]
+        grad_b[-1] = np.sum(grad_b[-1], axis=0)[:, None]
+        grad_w[-1] = deltas[-1][:, :, None] @ A[-2][:, None, :]
+        grad_w[-1] = np.sum(grad_w[-1], axis=0)
 
-        return partial_b, partial_w
+        # Propagate error backward and solve for gradients
+        for l in range(2, n):
+            deltas[-l] = (deltas[-l+1] @ self.weights[-l+1]) * \
+                sigmoid_prime(Z[-l])
+
+            grad_b[-l] = deltas[-l]
+            grad_b[-l] = np.sum(grad_b[-l], axis=0)[:, None]
+            grad_w[-l] = deltas[-l][:, :, None] @ A[-l-1][:, None, :]
+            grad_w[-l] = np.sum(grad_w[-l], axis=0)
+
+        # for i in range(0, n-1):
+        #     print(grad_b[i].shape, self.bias[i].shape)
+        #     print(grad_w[i].shape, self.weights[i].shape)
+        return grad_b, grad_w
