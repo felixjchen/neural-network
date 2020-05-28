@@ -38,8 +38,11 @@ class NeuralNetwork():
         actual = np.argmax(y, axis=1)
         return round(sum(pred == actual) / len(X) * 100, 3)
 
-    def SGD(self, train_X, train_y, val_X, val_y, epochs=30, batch_percent=0.0002, eta=1):
-        """ Stochastic gradient descent, """
+    def SGD(self, train_X, train_y, val_X, val_y, epochs=30, batch_percent=0.0002, eta=1, lmbda=0.5):
+        """ Stochastic gradient descent, 
+
+        Note when batch_perecent = 1, this would be considered gradient descent.
+        """
         assert 0 < batch_percent <= 1, "batch percent invalid"
 
         n = len(train_X)
@@ -53,20 +56,27 @@ class NeuralNetwork():
                 train_X, num_batches), np.array_split(train_y, num_batches)
 
             for batch_X, batch_y in zip(batches_X, batches_y):
-                self.update(batch_X, batch_y, eta)
+                self.update(batch_X, batch_y, eta, n, lmbda)
 
-            loss = self.loss_function.get_loss(self.feedforward(val_X), val_y)
+            # Get regularized loss
+            loss = self.loss_function.get_loss(self.feedforward(
+                val_X), val_y) + (lmbda/(2*n))*np.sum(np.linalg.norm(w)**2 for w in self.weights)
+
+            loss = round(loss, 3)
 
             print(
                 f"Epoch {e}: Loss {loss}, Validation accuracy {self.get_accuracy(val_X, val_y)}%")
 
-    def update(self, X, y, eta):
+    def update(self, X, y, eta, n, lmbda):
+
         c = eta/len(X)
 
         grad_b, grad_w = self.backprop(X, y)
 
         self.bias = [b - c*db for b, db in zip(self.bias, grad_b)]
-        self.weights = [w - c*dw for w, dw in zip(self.weights, grad_w)]
+        # Regularize
+        self.weights = [(1-(eta*lmbda)/n)*w - c*dw for w,
+                        dw in zip(self.weights, grad_w)]
 
     def backprop(self, X, y):
         """ For all mxj training inputs and mxk labels, compute the sum of grads w.r.t to bias and weights for each node"""

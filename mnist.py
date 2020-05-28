@@ -22,8 +22,8 @@ def preprocess(data):
 train_X, train_y = preprocess(TRAINING)
 val_X, val_y = preprocess(TRAINING)
 
-model = NeuralNetwork([784, 50, 30, 10], loss=CrossEntropy())
-# Eta = 1 for crossentropy loss
-# Eta = 3 for quadratic loss
+model = NeuralNetwork([784, 30, 10], loss=CrossEntropy)
 
-model.SGD(train_X, train_y, val_X, val_y, eta=1)
+# Eta = 0.5, lmbda=0.5 for crossentropy loss
+# Eta = 3 for quadratic loss
+model.SGD(train_X, train_y, val_X, val_y, eta=0.5, lmbda=0.5)
