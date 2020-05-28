@@ -1,38 +1,44 @@
 import numpy as np
+from helpers import sigmoid, sigmoid_prime
 
 np.random.seed(0)
 
 
-def sigmoid(z):
-    return 1 / (1 + np.exp(-z))
-
-
-def sigmoid_prime(z):
-    return sigmoid(z) * (1-sigmoid(z))
-
-
 class NeuralNetwork():
 
-    def __init__(self, size):
+    def __init__(self, size, loss):
 
         self.num_layers = len(size)
         self.size = size
+
+        self.loss_function = loss
 
         self.bias = [np.random.randn(i, 1) for i in size[1:]]
         self.weights = [np.random.randn(i, o)
                         for i, o in zip(size[1:], size[:-1])]
 
     def feedforward(self, A):
+        # A is activation in network
         for w, b in zip(self.weights, self.bias):
             A = sigmoid(A @ w.T + b.T)
         return A
 
-    def predict(self, A):
-        pred = self.feedforward(A)
-
+    def predict(self, X):
+        """
+        For n training examples, feedforward each example and return the index with maximum activation. 
+        """
+        pred = self.feedforward(X)
         return np.argmax(pred, axis=1)
 
-    def SGD(self, train_X, train_y, val_X, val_y, epochs=30, batch_percent=0.0002, eta=3):
+    def get_accuracy(self, X, y):
+        """
+        Get's the accuracy of the 
+        """
+        pred = self.predict(X)
+        actual = np.argmax(y, axis=1)
+        return round(sum(pred == actual) / len(X) * 100, 3)
+
+    def SGD(self, train_X, train_y, val_X, val_y, epochs=30, batch_percent=0.0002, eta=1):
         """ Stochastic gradient descent, """
         assert 0 < batch_percent <= 1, "batch percent invalid"
 
@@ -49,12 +55,12 @@ class NeuralNetwork():
             for batch_X, batch_y in zip(batches_X, batches_y):
                 self.update(batch_X, batch_y, eta)
 
-            pred = self.predict(val_X)
-            actual = np.argmax(val_y, axis=1)
-            print(sum(pred == actual) / len(val_X) * 100)
+            loss = self.loss_function.get_loss(self.feedforward(val_X), val_y)
+
+            print(
+                f"Epoch {e}: Loss {loss}, Validation accuracy {self.get_accuracy(val_X, val_y)}%")
 
     def update(self, X, y, eta):
-
         c = eta/len(X)
 
         grad_b, grad_w = self.backprop(X, y)
@@ -64,8 +70,6 @@ class NeuralNetwork():
 
     def backprop(self, X, y):
         """ For all mxj training inputs and mxk labels, compute the sum of grads w.r.t to bias and weights for each node"""
-        # size of minibatch
-        m = len(X)
 
         # Feed forward, if a layer has k nodes, Z is a list of nxk z values and A is a list of nxk activation values
         Z = []
@@ -83,7 +87,7 @@ class NeuralNetwork():
 
         # Deltas is a list of nxk errors for a layer with k nodes
         deltas = [None for _ in range(n-1)]
-        deltas[-1] = (A[-1] - y) * sigmoid_prime(Z[-1])
+        deltas[-1] = self.loss_function.get_error(A[-1], Z[-1], y)
 
         grad_b[-1] = deltas[-1]
         grad_b[-1] = np.sum(grad_b[-1], axis=0)[:, None]
@@ -100,7 +104,4 @@ class NeuralNetwork():
             grad_w[-l] = deltas[-l][:, :, None] @ A[-l-1][:, None, :]
             grad_w[-l] = np.sum(grad_w[-l], axis=0)
 
-        # for i in range(0, n-1):
-        #     print(grad_b[i].shape, self.bias[i].shape)
-        #     print(grad_w[i].shape, self.weights[i].shape)
         return grad_b, grad_w
