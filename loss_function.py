@@ -8,7 +8,7 @@ class Quadratic():
         """ Returns the quadratic loss over all training examples,a_last nxk is the activations in the last layer and y nxk are the corresponding labels. For n inputs and label size k"""
         n, _ = y.shape
         norms = np.linalg.norm(a_last-y, axis=1) ** 2
-        return round(np.sum(norms) / (n * 2), 3)
+        return np.sum(norms) / (n * 2)
 
     @staticmethod
     def get_error(a_last,  z_last, y):

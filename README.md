@@ -1,5 +1,7 @@
 # neural-network
 
-Created with only numpy a neural network that utilizes stochastic gradient descent and back propagation to achieve a 97.63% validation accuracy on MNIST. 
+A neural network that utilizes stochastic gradient descent and back propagation to can achieve a 99.06% validation accuracy on MNIST.
+
+Using only numpy.
 
 Using L2 Regularization and Cross-Entropy loss.

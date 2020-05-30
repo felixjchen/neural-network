@@ -14,7 +14,7 @@ class NeuralNetwork():
         self.loss_function = loss
 
         self.bias = [np.random.randn(i, 1) for i in size[1:]]
-        self.weights = [np.random.randn(i, o)
+        self.weights = [np.random.randn(i, o)/np.sqrt(i)
                         for i, o in zip(size[1:], size[:-1])]
 
     def feedforward(self, A):
