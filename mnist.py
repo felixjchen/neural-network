@@ -1,11 +1,12 @@
 from neural_network import NeuralNetwork
+from activation_function import Sigmoid, Linear, ReLU
 from loss_function import Quadratic, CrossEntropy
 
 
 from pickle import _Unpickler
 import gzip
 import numpy as np
-f = gzip.open('mnist.pkl.gz', 'rb')
+f = gzip.open('dataset/mnist.pkl.gz', 'rb')
 u = _Unpickler(f)
 u.encoding = 'latin1'
 
@@ -22,7 +23,9 @@ def preprocess(data):
 train_X, train_y = preprocess(TRAINING)
 val_X, val_y = preprocess(TRAINING)
 
-model = NeuralNetwork([784, 50, 50, 10], loss=CrossEntropy)
+model = NeuralNetwork(size=[784, 30, 30,  10],
+                      activation=[Sigmoid(), ReLU(), Sigmoid()],
+                      loss=CrossEntropy())
 
 # Eta = 0.5, lmbda=0.5 for crossentropy loss
 # Eta = 3 for quadratic loss

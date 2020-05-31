@@ -1,12 +1,22 @@
 import numpy as np
-from helpers import sigmoid, sigmoid_prime
 
 np.random.seed(0)
 
 
 class NeuralNetwork():
 
-    def __init__(self, size, loss):
+    def __init__(self, size, activation, loss):
+        """
+        Initialize a neural network with shape defined by size, layer activations defined by activation and loss function by loss.
+
+        size :: [Int]
+        - index 0 has size of input layer, index -1 has size of output layer, indexs [1, -2] have hidden layer sizes
+
+        activation :: [ActivationFunction]
+        - index -1 has activation function for output layer, indexs [0, -2] have activation functions for hidden layers
+
+        loss :: LossFunction
+        """
 
         self.num_layers = len(size)
         self.size = size
@@ -16,11 +26,12 @@ class NeuralNetwork():
         self.bias = [np.random.randn(i, 1) for i in size[1:]]
         self.weights = [np.random.randn(i, o)/np.sqrt(i)
                         for i, o in zip(size[1:], size[:-1])]
+        self.activation_functions = activation
 
     def feedforward(self, A):
-        # A is activation in network
-        for w, b in zip(self.weights, self.bias):
-            A = sigmoid(A @ w.T + b.T)
+        # A is activation values in network at current layer
+        for a, w, b in zip(self.activation_functions, self.weights, self.bias):
+            A = a.f(A @ w.T + b.T)
         return A
 
     def predict(self, X):
@@ -61,7 +72,6 @@ class NeuralNetwork():
             # Get regularized loss
             loss = self.loss_function.get_loss(self.feedforward(
                 val_X), val_y) + (lmbda/(2*n))*np.sum(np.linalg.norm(w)**2 for w in self.weights)
-
             loss = round(loss, 3)
 
             print(
@@ -84,20 +94,20 @@ class NeuralNetwork():
         # Feed forward, if a layer has k nodes, Z is a list of nxk z values and A is a list of nxk activation values
         Z = []
         A = [X]
-        for w, b in zip(self.weights, self.bias):
+        for a, w, b in zip(self.activation_functions, self.weights, self.bias):
             z = A[-1] @ w.T + b.T
             Z += [z]
-            A += [sigmoid(z)]
+            A += [a.f(z)]
 
+        n = self.num_layers
         grad_b = [None for b in self.bias]
         grad_w = [None for w in self.weights]
 
         # Find error in last layer
-        n = self.num_layers
-
         # Deltas is a list of nxk errors for a layer with k nodes
         deltas = [None for _ in range(n-1)]
-        deltas[-1] = self.loss_function.get_error(A[-1], Z[-1], y)
+        deltas[-1] = self.loss_function.last_layer_error(
+            A[-1], y, Z[-1], self.activation_functions[-1])
 
         grad_b[-1] = deltas[-1]
         grad_b[-1] = np.sum(grad_b[-1], axis=0)[:, None]
@@ -107,7 +117,7 @@ class NeuralNetwork():
         # Propagate error backward and solve for gradients
         for l in range(2, n):
             deltas[-l] = (deltas[-l+1] @ self.weights[-l+1]) * \
-                sigmoid_prime(Z[-l])
+                self.activation_functions[-l].f_prime(Z[-l])
 
             grad_b[-l] = deltas[-l]
             grad_b[-l] = np.sum(grad_b[-l], axis=0)[:, None]
