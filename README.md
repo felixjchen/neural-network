@@ -4,4 +4,7 @@ A neural network that utilizes stochastic gradient descent and back propagation 
 
 Using only numpy.
 
-Using L2 Regularization and Cross-Entropy loss.
+Using L2 Regularization.
+
+Losses: Quadratic and CrossEntropy
+Activations: Sigmoid, Linear, ReLU

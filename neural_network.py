@@ -54,7 +54,6 @@ class NeuralNetwork():
 
         Note when batch_perecent = 1, this would be considered gradient descent.
         """
-        assert 0 < batch_percent <= 1, "batch percent invalid"
 
         n = len(train_X)
         num_batches = 1 / batch_percent
