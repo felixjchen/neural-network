@@ -23,8 +23,8 @@ def preprocess(data):
 train_X, train_y = preprocess(TRAINING)
 val_X, val_y = preprocess(TRAINING)
 
-model = NeuralNetwork(size=[784, 30, 30,  10],
-                      activation=[Sigmoid(), ReLU(), Sigmoid()],
+model = NeuralNetwork(size=[784, 50, 30,  10],
+                      activation=[Sigmoid(), Sigmoid(), Sigmoid()],
                       loss=CrossEntropy())
 
 # Eta = 0.5, lmbda=0.5 for crossentropy loss
