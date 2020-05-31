@@ -7,4 +7,5 @@ Using only numpy.
 Using L2 Regularization.
 
 Losses: Quadratic and CrossEntropy
-Activations: Sigmoid, Linear, ReLU
+
+Activations: Sigmoid, Linear and ReLU
