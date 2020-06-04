@@ -1,5 +1,5 @@
 from neural_network import NeuralNetwork
-from activation_function import Sigmoid, Linear, ReLU
+from activation_function import Sigmoid, Softmax, Linear, ReLU
 from loss_function import Quadratic, CrossEntropy
 
 
@@ -21,12 +21,12 @@ def preprocess(data):
 
 
 train_X, train_y = preprocess(TRAINING)
-val_X, val_y = preprocess(TRAINING)
+val_X, val_y = preprocess(VALIDATION)
 
-model = NeuralNetwork(size=[784, 50, 30,  10],
-                      activation=[Sigmoid(), Sigmoid(), Sigmoid()],
+model = NeuralNetwork(size=[784, 50,  30,  10],
+                      activation=[Sigmoid(), Sigmoid(), Softmax()],
                       loss=CrossEntropy())
 
 # Eta = 0.5, lmbda=0.5 for crossentropy loss
 # Eta = 3 for quadratic loss
-model.SGD(train_X, train_y, val_X, val_y, eta=0.5, lmbda=0.5)
+model.SGD(train_X, train_y, val_X, val_y, epochs=30, eta=0.5, lmbda=0.5)

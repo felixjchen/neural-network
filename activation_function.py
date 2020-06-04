@@ -10,6 +10,20 @@ class Sigmoid():
         return self.f(z) * (1-self.f(z))
 
 
+class Softmax():
+    def f(self, z):
+        """ f: Real -> [0,1] """
+        _, k = z.shape
+
+        ez = np.exp(z)
+        normalize_factor = np.sum(ez, axis=1)[:, None]
+        normalize_factor = np.repeat(normalize_factor, k, axis=1)
+        return ez / normalize_factor
+
+    def f_prime(self, z):
+        return self.f(z) * (1-self.f(z))
+
+
 class Linear():
     def f(self, z):
         """ f: Real -> (-inf,inf) """

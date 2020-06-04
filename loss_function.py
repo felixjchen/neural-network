@@ -17,9 +17,11 @@ class Quadratic():
 class CrossEntropy():
     def get_loss(self, a_last, y):
         """ Returns the CrossEntropy loss over all training examples,a_last nxk is the activations in the last layer and y nxk are the corresponding labels. For n inputs and label size k"""
+
+        # This has numerical stability issues...
         n, k = y.shape
         lna = np.log(a_last)
-        ln1_a = np.log(np.ones((n, k)) - a_last)
+        ln1_a = np.log(1 - a_last)
         C = (y * lna) + (ln1_a) - (y * ln1_a)
         C = np.sum(C)
         return -C/n
