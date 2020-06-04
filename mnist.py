@@ -27,6 +27,7 @@ model = NeuralNetwork(size=[784, 50,  30,  10],
                       activation=[Sigmoid(), Sigmoid(), Softmax()],
                       loss=CrossEntropy())
 
+print(train_X.shape)
 # Eta = 0.5, lmbda=0.5 for crossentropy loss
 # Eta = 3 for quadratic loss
-model.SGD(train_X, train_y, val_X, val_y, epochs=30, eta=0.5, lmbda=0.5)
+model.SGD(train_X, train_y, val_X, val_y, epochs=20, eta=0.5, lmbda=0.5)

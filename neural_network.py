@@ -38,8 +38,8 @@ class NeuralNetwork():
         """
         For n training examples, feedforward each example and return the index with maximum activation. 
         """
-        pred = self.feedforward(X)
-        return np.argmax(pred, axis=1)
+        activations = self.feedforward(X)
+        return np.argmax(activations, axis=1)
 
     def get_accuracy(self, X, y):
         """
@@ -49,7 +49,7 @@ class NeuralNetwork():
         actual = np.argmax(y, axis=1)
         return round(sum(pred == actual) / len(X) * 100, 3)
 
-    def SGD(self, train_X, train_y, val_X, val_y, epochs=30, batch_percent=0.0002, eta=1, lmbda=0.5):
+    def SGD(self, train_X, train_y, val_X, val_y, epochs=30, batch_percent=0.0002, eta=1, lmbda=0.5, verbose=True):
         """ Stochastic gradient descent, 
 
         Note when batch_perecent = 1, this would be considered gradient descent.
@@ -73,8 +73,9 @@ class NeuralNetwork():
                 val_X), val_y) + (lmbda/(2*n))*np.sum(np.linalg.norm(w)**2 for w in self.weights)
             loss = round(loss, 3)
 
-            print(
-                f"Epoch {e}: Loss {loss}, Validation accuracy {self.get_accuracy(val_X, val_y)}%")
+            if verbose:
+                print(
+                    f"Epoch {e}: Loss {loss}, Validation accuracy {self.get_accuracy(val_X, val_y)}%")
 
     def update(self, X, y, eta, n, lmbda):
 
