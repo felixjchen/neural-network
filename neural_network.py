@@ -5,7 +5,7 @@ np.random.seed(0)
 
 class NeuralNetwork():
 
-    def __init__(self, size, activation, loss):
+    def __init__(self, size, activation, loss, regression=False):
         """
         Initialize a neural network with shape defined by size, layer activations defined by activation and loss function by loss.
 
@@ -28,6 +28,8 @@ class NeuralNetwork():
                         for i, o in zip(size[1:], size[:-1])]
         self.activation_functions = activation
 
+        self.regression = regression
+
     def feedforward(self, A):
         # A is activation values in network at current layer
         for a, w, b in zip(self.activation_functions, self.weights, self.bias):
@@ -36,21 +38,26 @@ class NeuralNetwork():
 
     def predict(self, X):
         """
-        For n training examples, feedforward each example and return the index with maximum activation. 
+        For n training examples, feedforward each example and return the index with maximum activation.
         """
         activations = self.feedforward(X)
         return np.argmax(activations, axis=1)
 
     def get_accuracy(self, X, y):
         """
-        Get's the accuracy of the 
+        Get's the accuracy of the predictions
         """
-        pred = self.predict(X)
-        actual = np.argmax(y, axis=1)
-        return round(sum(pred == actual) / len(X) * 100, 3)
+
+        if not self.regression:
+            pred = self.predict(X)
+            actual = np.argmax(y, axis=1)
+            return round(sum(pred == actual) / len(X) * 100, 3)
+        else:
+            activations = self.feedforward(X)
+            return np.mean(activations/y * 100)
 
     def SGD(self, train_X, train_y, val_X, val_y, epochs=30, batch_percent=0.0002, eta=1, lmbda=0.5, verbose=True):
-        """ Stochastic gradient descent, 
+        """ Stochastic gradient descent,
 
         Note when batch_perecent = 1, this would be considered gradient descent.
         """
@@ -74,8 +81,11 @@ class NeuralNetwork():
             loss = round(loss, 3)
 
             if verbose:
-                print(
-                    f"Epoch {e}: Loss {loss}, Validation accuracy {self.get_accuracy(val_X, val_y)}%")
+                if self.regression:
+                    print(f"Epoch {e}: Loss {loss}")
+                else:
+                    print(
+                        f"Epoch {e}: Loss {loss}, Validation accuracy {self.get_accuracy(val_X, val_y)}%")
 
     def update(self, X, y, eta, n, lmbda):
 

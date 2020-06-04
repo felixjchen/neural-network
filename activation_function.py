@@ -37,18 +37,67 @@ class Linear():
 
 
 class ReLU():
-    def __init__(self, c=1):
-        self.c = c
 
     def f(self, z):
         """ f: Real -> [0,inf) """
         z = z.copy()
         z[z < 0] = 0
-        return self.c*z
+        return z
 
     def f_prime(self, z):
         """ f: Real -> [0,inf) """
         z = z.copy()
-        z[z >= 0] = self.c
+        z[z >= 0] = 1
         z[z < 0] = 0
+        return z
+
+
+class LeakyRelu():
+
+    def f(self, z):
+        """ f: Real -> [0,inf) """
+        z = z.copy()
+        z[z < 0] = 0.01*z[z < 0]
+        return z
+
+    def f_prime(self, z):
+        """ f: Real -> [0,inf) """
+        z = z.copy()
+        z[z >= 0] = 1
+        z[z < 0] = 0.01
+        return z
+
+
+class ReLU6():
+    def f(self, z):
+        """ f: Real -> [0,inf) """
+        z = z.copy()
+        z[z < 0] = 0
+        z[z > 6] = 6
+        return z
+
+    def f_prime(self, z):
+        """ f: Real -> [0,inf) """
+        z = z.copy()
+        z[np.where(np.logical_and(z >= 0, z <= 6))] = 1
+        z[z < 0] = 0
+        z[z > 6] = 0
+        return z
+
+
+class LeakyRelu6():
+
+    def f(self, z):
+        """ f: Real -> [0,inf) """
+        z = z.copy()
+        z[z < 0] = 0.01*z[z < 0]
+        z[z > 6] = 6
+        return z
+
+    def f_prime(self, z):
+        """ f: Real -> [0,inf) """
+        z = z.copy()
+        z[np.where(np.logical_and(z >= 0, z <= 6))] = 1
+        z[z < 0] = 0.01
+        z[z > 6] = 0
         return z

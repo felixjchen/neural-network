@@ -4,6 +4,6 @@ A neural network that utilizes stochastic gradient descent and back propagation 
 
 Using only numpy.
 
+Activations: Sigmoid, Softmax, Linear and ReLU, LeakyRelU, ReLU6, "LeakyRelu6"
 Losses: Quadratic and CrossEntropy
-Activations: Sigmoid, Softmax, Linear and ReLU
 Using L2 Regularization.
