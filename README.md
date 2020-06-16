@@ -1,9 +1,12 @@
 # neural-network
 
-A neural network that utilizes stochastic gradient descent and back propagation to can achieve a 97.02% validation accuracy on MNIST.
+Neural networks implemented from scratch with NumPy that can easily achieve 96.49% validation accuracy on MNIST.
 
-Using only numpy.
+- stochastic gradient descent and back propagation (implemented in batches for speedup)
+- can change # of layers, size of layer, loss function and activation per layer
 
-Activations: Sigmoid, Softmax, Linear and ReLU, LeakyRelU, ReLU6, "LeakyRelu6"
-Losses: Quadratic and CrossEntropy
-Using L2 Regularization.
+  Activations: Sigmoid, Softmax, Linear and ReLU, LeakyRelU, ReLU6, "LeakyRelu6"
+  
+  Losses: Quadratic and CrossEntropy
+  
+- l2 regularization
