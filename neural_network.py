@@ -85,7 +85,7 @@ class NeuralNetwork():
                     print(f"Epoch {e}: Loss {loss}")
                 else:
                     print(
-                        f"Epoch {e}: Loss {loss}, Validation accuracy {self.get_accuracy(val_X, val_y)}%")
+                        f"Epoch {e}: Loss {loss}, Training accuracy {self.get_accuracy(train_X, train_y)}%, Validation accuracy {self.get_accuracy(val_X, val_y)}%")
 
     def update(self, X, y, eta, n, lmbda):
 
