@@ -10,3 +10,5 @@ Neural networks implemented from scratch with NumPy that can easily achieve 96.4
   Losses: Quadratic and CrossEntropy
   
 - l2 regularization
+
+![ regression](https://user-images.githubusercontent.com/31393977/84724482-4d784f80-af56-11ea-84e0-30ade6405217.png)
