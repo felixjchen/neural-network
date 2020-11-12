@@ -2,7 +2,7 @@
 
 Neural networks implemented from scratch with NumPy that can easily achieve 96.49% validation accuracy on MNIST.
 
-- stochastic gradient descent and back propagation (implemented in batches for speedup)
+- stochastic gradient descent and back propagation (implemented with NumPy batch operations only for speed)
 - can change # of layers, size of layer, loss function and activation per layer
 
   Activations: Sigmoid, Softmax, Linear and ReLU, LeakyRelU, ReLU6, "LeakyRelu6"
