@@ -5,7 +5,7 @@ Neural networks implemented from scratch with NumPy that can easily achieve 96.4
 - stochastic gradient descent and back propagation (implemented with NumPy batch operations only for speed)
 - can change # of layers, size of layer, loss function and activation per layer
 
-  Activations: Sigmoid, Softmax, Linear and ReLU, LeakyRelU, ReLU6, "LeakyRelu6"
+  Activations: Sigmoid, Softmax, Linear and ReLU, LeakyRelU, ReLU6
   
   Losses: Quadratic and CrossEntropy
   
