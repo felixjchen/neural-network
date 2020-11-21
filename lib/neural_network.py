@@ -3,7 +3,7 @@ import numpy as np
 
 class NeuralNetwork():
 
-    def __init__(self, size, activation, loss, regression=False):
+    def __init__(self, size, activation, loss, regression=False, parameters = (None, None)):
         """
         Initialize a neural network with shape defined by size, layer activations defined by activation and loss function by loss.
 
@@ -19,14 +19,16 @@ class NeuralNetwork():
         self.num_layers = len(size)
         self.size = size
 
+        self.activation_functions = activation
         self.loss_function = loss
 
-        self.bias = [np.random.randn(i, 1) for i in size[1:]]
-        self.weights = [np.random.randn(i, o)/np.sqrt(i)
-                        for i, o in zip(size[1:], size[:-1])]
-        self.activation_functions = activation
-
         self.regression = regression
+
+        bias, weights = parameters
+
+        self.bias = bias if bias else [np.random.randn(i, 1) for i in size[1:]]
+        self.weights = weights if weights else [np.random.randn(i, o)/np.sqrt(i) for i, o in zip(size[1:], size[:-1])]
+
 
     def feedforward(self, A):
         # A is activation values in network at current layer

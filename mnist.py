@@ -1,6 +1,6 @@
-from neural_network import NeuralNetwork
-from activation_function import Sigmoid, Softmax, Linear, ReLU, ReLU6, LeakyRelu, LeakyRelu6
-from loss_function import Quadratic, CrossEntropy
+from lib.neural_network import NeuralNetwork
+from lib.activation_function import Sigmoid, Softmax, Linear, ReLU, ReLU6, LeakyRelu, LeakyRelu6
+from lib.loss_function import Quadratic, CrossEntropy
 
 from pickle import _Unpickler
 import gzip
